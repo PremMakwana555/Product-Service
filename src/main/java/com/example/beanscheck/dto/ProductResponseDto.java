@@ -1,6 +1,5 @@
 package com.example.beanscheck.dto;
 
-import com.example.beanscheck.models.Category;
 import lombok.Getter;
 import lombok.Setter;
 

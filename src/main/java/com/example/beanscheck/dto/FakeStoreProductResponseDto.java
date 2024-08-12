@@ -1,12 +1,16 @@
 package com.example.beanscheck.dto;
 
-import com.example.beanscheck.models.Category;
+import lombok.Getter;
+import lombok.Setter;
 
+
+@Getter
+@Setter
 public class FakeStoreProductResponseDto {
     private Long id;
     private String name;
     private String description;
     private Double price;
     private String image;
-    private Category category;
+    private String category;
 }
