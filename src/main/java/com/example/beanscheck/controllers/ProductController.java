@@ -24,9 +24,9 @@ public class ProductController {
         return ResponseEntity.ok(productDto);
     }
 
-//    @GetMapping("/products")
-//    public ProductResponseDto getAllProducts() {
-//        System.out.println("ProductController.getAllProducts");
-//        return List.of();
-//    }
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
+        System.out.println("ProductController.getAllProducts");
+        return ResponseEntity.ok(productService.getAllProducts().stream().map(ProductMapper.INSTANCE::ProductDtoToProduct).toList());
+    }
 }

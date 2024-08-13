@@ -1,11 +1,8 @@
 package com.example.beanscheck.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-
-@Getter
-@Setter
+@Data
 public class FakeStoreProductResponseDto {
     private Long id;
     private String name;
