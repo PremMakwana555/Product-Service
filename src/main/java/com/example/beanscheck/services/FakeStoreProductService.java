@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class FakeStoreProductService implements ProductService {
@@ -31,16 +31,22 @@ public class FakeStoreProductService implements ProductService {
 
     @Override
     public List<Product> getAllProducts() {
-        ResponseEntity<List<FakeStoreProductResponseDto>> responseEntity = restTemplate.exchange(
-                "https://fakestoreapi.com/products",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<FakeStoreProductResponseDto>>() {}
-        );
+//        TODO: Using exchange method
+//        ResponseEntity<List<FakeStoreProductResponseDto>> responseEntity = restTemplate.exchange(
+//                "https://fakestoreapi.com/products",
+//                HttpMethod.GET,
+//                null,
+//                new ParameterizedTypeReference<List<FakeStoreProductResponseDto>>() {}
+//        );
 
-       List<FakeStoreProductResponseDto> responseDtoList = responseEntity.getBody();
+        // TODO: Using the get for Entity method
+        ResponseEntity<FakeStoreProductResponseDto[]> responseEntity = restTemplate.
+                getForEntity("https://fakestoreapi.com/products",
+                        FakeStoreProductResponseDto[].class);
 
-       return responseDtoList.stream().map(ProductMapper.INSTANCE::fakeStoreProductResponseDtoToProduct).toList();
+        return Arrays.stream(Objects.requireNonNull(responseEntity.getBody()))
+                .map(ProductMapper.INSTANCE::fakeStoreProductResponseDtoToProduct).toList();
+
     }
 
 
