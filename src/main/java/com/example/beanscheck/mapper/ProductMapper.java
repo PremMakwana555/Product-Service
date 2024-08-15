@@ -21,6 +21,12 @@ public interface ProductMapper {
 
     ProductResponseDto ProductDtoToProduct(Product product);
 
+    Product ProductDtoToProduct(ProductResponseDto productResponseDto);
+
+    @Mapping(source = "categoryName", target = "category")
+    @Mapping(source = "imageUrl", target = "image")
+    FakeStoreProductResponseDto ProductDtoToFakeStoreProductResponseDto(ProductResponseDto productResponseDto);
+
     default Category map(String value) {
         if (value == null) {
             return null;
