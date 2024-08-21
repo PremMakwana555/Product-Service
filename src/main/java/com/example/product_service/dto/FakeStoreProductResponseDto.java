@@ -1,4 +1,4 @@
-package com.example.beanscheck.dto;
+package com.example.product_service.dto;
 
 import lombok.Data;
 

@@ -1,7 +1,7 @@
-package com.example.beanscheck.services;
+package com.example.product_service.services;
 
-import com.example.beanscheck.dto.ProductResponseDto;
-import com.example.beanscheck.models.Product;
+import com.example.product_service.dto.ProductResponseDto;
+import com.example.product_service.models.Product;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

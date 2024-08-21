@@ -1,4 +1,4 @@
-package com.example.beanscheck.models;
+package com.example.product_service.models;
 
 import lombok.Getter;
 import lombok.Setter;

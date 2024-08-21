@@ -1,14 +1,11 @@
-package com.example.beanscheck.services;
+package com.example.product_service.services;
 
-import com.example.beanscheck.dto.FakeStoreProductResponseDto;
-import com.example.beanscheck.dto.ProductResponseDto;
-import com.example.beanscheck.mapper.ProductMapper;
-import com.example.beanscheck.models.Product;
+import com.example.product_service.dto.FakeStoreProductResponseDto;
+import com.example.product_service.dto.ProductResponseDto;
+import com.example.product_service.mapper.ProductMapper;
+import com.example.product_service.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -54,27 +51,27 @@ public class FakeStoreProductService implements ProductService {
     @Override
     public Product addProduct(ProductResponseDto productResponseDto) {
 
-        FakeStoreProductResponseDto request_dto = ProductMapper.INSTANCE.ProductDtoToFakeStoreProductResponseDto(productResponseDto);
+        FakeStoreProductResponseDto requestDto = ProductMapper.INSTANCE.productDtoToFakeStoreProductResponseDto(productResponseDto);
 
         ResponseEntity<FakeStoreProductResponseDto> responseEntity =
-                restTemplate.postForEntity("https://fakestoreapi.com/products", request_dto, FakeStoreProductResponseDto.class);
+                restTemplate.postForEntity("https://fakestoreapi.com/products", requestDto, FakeStoreProductResponseDto.class);
 
         return ProductMapper.INSTANCE.fakeStoreProductResponseDtoToProduct(Objects.requireNonNull(responseEntity.getBody()));
     }
 
     @Override
     public Product partiallyUpdate(Long id, ProductResponseDto productDto) {
-        FakeStoreProductResponseDto request_dto = ProductMapper.INSTANCE.ProductDtoToFakeStoreProductResponseDto(productDto);
+        FakeStoreProductResponseDto requestDto = ProductMapper.INSTANCE.productDtoToFakeStoreProductResponseDto(productDto);
 
         FakeStoreProductResponseDto responseDto = restTemplate.patchForObject(
                 "http://fakestoreapi.com/products/{id}",
-                request_dto,
+                requestDto,
                 FakeStoreProductResponseDto.class, id
         );
 
         return ProductMapper.INSTANCE.fakeStoreProductResponseDtoToProduct(responseDto);
 
-//        HttpEntity<FakeStoreProductResponseDto> requestEntity = new HttpEntity<>(request_dto);
+//        HttpEntity<FakeStoreProductResponseDto> requestEntity = new HttpEntity<>(requestDto);
 //
 //        ResponseEntity<FakeStoreProductResponseDto> responseEntity = restTemplate.exchange(
 //                "http://fakestoreapi.com/products/" + id,

@@ -1,9 +1,9 @@
-package com.example.beanscheck.mapper;
+package com.example.product_service.mapper;
 
-import com.example.beanscheck.dto.FakeStoreProductResponseDto;
-import com.example.beanscheck.dto.ProductResponseDto;
-import com.example.beanscheck.models.Category;
-import com.example.beanscheck.models.Product;
+import com.example.product_service.dto.FakeStoreProductResponseDto;
+import com.example.product_service.dto.ProductResponseDto;
+import com.example.product_service.models.Category;
+import com.example.product_service.models.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -19,13 +19,13 @@ public interface ProductMapper {
     @Mapping(source = "category.name", target = "category")
     FakeStoreProductResponseDto productToFakeStoreProductResponseDto(Product product);
 
-    ProductResponseDto ProductDtoToProduct(Product product);
+    ProductResponseDto productDtoToProduct(Product product);
 
-    Product ProductDtoToProduct(ProductResponseDto productResponseDto);
+    Product productDtoToProduct(ProductResponseDto productResponseDto);
 
     @Mapping(source = "categoryName", target = "category")
     @Mapping(source = "imageUrl", target = "image")
-    FakeStoreProductResponseDto ProductDtoToFakeStoreProductResponseDto(ProductResponseDto productResponseDto);
+    FakeStoreProductResponseDto productDtoToFakeStoreProductResponseDto(ProductResponseDto productResponseDto);
 
     default Category map(String value) {
         if (value == null) {

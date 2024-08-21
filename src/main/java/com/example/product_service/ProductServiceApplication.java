@@ -1,14 +1,13 @@
-package com.example.beanscheck;
+package com.example.product_service;
 
-import com.example.beanscheck.models.Product;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BeanscheckApplication {
+public class ProductServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BeanscheckApplication.class, args);
+        SpringApplication.run(ProductServiceApplication.class, args);
     }
 
 }

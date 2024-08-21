@@ -1,16 +1,16 @@
-package com.example.beanscheck;
+package com.example.product_service;
 
-import com.example.beanscheck.dto.FakeStoreProductResponseDto;
-import com.example.beanscheck.mapper.ProductMapper;
-import com.example.beanscheck.models.Product;
+import com.example.product_service.dto.FakeStoreProductResponseDto;
+import com.example.product_service.mapper.ProductMapper;
+import com.example.product_service.models.Product;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ProductMapperTest {
+class ProductMapperTest {
 
     @Test
-    public void testMapping() {
+    void testMapping() {
         FakeStoreProductResponseDto dto = new FakeStoreProductResponseDto();
         dto.setId(1L);
         dto.setName("Test Product");
