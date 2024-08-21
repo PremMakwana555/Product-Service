@@ -1,0 +1,7 @@
+spring:
+  http:
+    client:
+      request-factory: org.springframework.http.client.HttpComponentsClientHttpRequestFactory
+
+  application:
+    name: beanscheck

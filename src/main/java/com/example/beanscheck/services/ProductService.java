@@ -13,4 +13,6 @@ public interface ProductService {
     public List<Product> getAllProducts();
 
     public Product addProduct(ProductResponseDto productResponseDto);
+
+    public Product partiallyUpdate(Long id, ProductResponseDto productDto);
 }

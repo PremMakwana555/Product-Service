@@ -35,4 +35,11 @@ public class ProductController {
         Product product = productService.addProduct(productDto);
         return ResponseEntity.ok(ProductMapper.INSTANCE.ProductDtoToProduct(product));
     }
+
+    @PatchMapping("/product/{id}")
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable("id") Long id, @RequestBody ProductResponseDto productDto) {
+        System.out.println("ProductController.updateProduct");
+        Product product = productService.partiallyUpdate(id, productDto);
+        return ResponseEntity.ok(ProductMapper.INSTANCE.ProductDtoToProduct(product));
+    }
 }
