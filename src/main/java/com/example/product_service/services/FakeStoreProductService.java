@@ -1,7 +1,7 @@
 package com.example.product_service.services;
 
 import com.example.product_service.dto.FakeStoreProductResponseDto;
-import com.example.product_service.dto.ProductResponseDto;
+import com.example.product_service.dto.ProductDto;
 import com.example.product_service.mapper.ProductMapper;
 import com.example.product_service.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +49,9 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
-    public Product addProduct(ProductResponseDto productResponseDto) {
+    public Product addProduct(ProductDto productDto) {
 
-        FakeStoreProductResponseDto requestDto = ProductMapper.INSTANCE.productDtoToFakeStoreProductResponseDto(productResponseDto);
+        FakeStoreProductResponseDto requestDto = ProductMapper.INSTANCE.productDtoToFakeStoreProductResponseDto(productDto);
 
         ResponseEntity<FakeStoreProductResponseDto> responseEntity =
                 restTemplate.postForEntity("https://fakestoreapi.com/products", requestDto, FakeStoreProductResponseDto.class);
@@ -60,7 +60,7 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
-    public Product partiallyUpdate(Long id, ProductResponseDto productDto) {
+    public Product partiallyUpdate(Long id, ProductDto productDto) {
         FakeStoreProductResponseDto requestDto = ProductMapper.INSTANCE.productDtoToFakeStoreProductResponseDto(productDto);
 
         FakeStoreProductResponseDto responseDto = restTemplate.patchForObject(

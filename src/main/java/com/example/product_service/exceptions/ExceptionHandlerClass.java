@@ -14,6 +14,18 @@ public class ExceptionHandlerClass {
     Logger logger = Logger.getLogger(getClass().getName());
 
     @ExceptionHandler(HttpClientErrorException.BadRequest.class)
+    public ResponseEntity<Object> handleHttpClientErrorException(Exception e) {
+        logger.info("Exception occurred while calling fakestore api service: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while calling fakestore api service");
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<Object> handleProductNotFoundException(ProductNotFoundException e) {
+        logger.info("ProductNotFoundException occurred: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception e) {
         logger.info("Exception occurred: " + e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
