@@ -1,12 +1,13 @@
-package com.example.beanscheck.dto;
+package com.example.product_service.dto;
 
-import com.example.beanscheck.models.Category;
+import lombok.Data;
 
+@Data
 public class FakeStoreProductResponseDto {
     private Long id;
     private String name;
     private String description;
     private Double price;
     private String image;
-    private Category category;
+    private String category;
 }

@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: ProductService
+
+  datasource:
+    url: jdbc:postgresql://localhost:5431/product_db
+    username: postgres
+    password: postgres
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jakarta.persistence.jdbc.url: jdbc:postgresql://localhost:5431/product_db
+        jakarta.persistence.jdbc.user: postgres
+        jakarta.persistence.jdbc.password: postgres
+
+logging:
+  level:
+    org:
+      springframework:
+        web: INFO

@@ -1,16 +1,15 @@
-package com.example.beanscheck.models;
+package com.example.product_service.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class Product {
-
-    private Long id;
+public class ProductDto {
     private String name;
     private String description;
     private Double price;
     private String imageUrl;
-    private Category category;
+    private String categoryName;
+    private String categoryDescription;
 }
