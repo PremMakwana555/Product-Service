@@ -12,11 +12,15 @@ spring:
     hibernate:
       ddl-auto: update
     properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        jakarta.persistence.jdbc.url: jdbc:postgresql://localhost:5431/product_db
-        jakarta.persistence.jdbc.user: postgres
-        jakarta.persistence.jdbc.password: postgres
+        hibernate:
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081
 
 logging:
   level:
