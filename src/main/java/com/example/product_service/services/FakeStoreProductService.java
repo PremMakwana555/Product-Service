@@ -14,9 +14,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("fakeStoreProductService")
 public class FakeStoreProductService implements ProductService {
@@ -55,18 +58,31 @@ public class FakeStoreProductService implements ProductService {
 //
 //        return Arrays.stream(Objects.requireNonNull(responseEntity.getBody()))
 //                .map(ProductMapper.INSTANCE::fakeStoreProductResponseDtoToProduct).toList();
+        ResponseEntity<FakeStoreProductResponseDto[]> responseEntity;
 
-        ResponseEntity<FakeStoreProductResponseDto[]> responseEntity =
-                restTemplate.getForEntity(BASE_URL, FakeStoreProductResponseDto[].class);
+        try {
+            responseEntity = restTemplate.getForEntity(BASE_URL, FakeStoreProductResponseDto[].class);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            // Handle errors such as 4xx or 5xx status codes
+            throw new RestTemplateException("Error fetching products from FakeStore API", e);
+        }
 
-        List<Product> products = Arrays.stream(Objects.requireNonNull(responseEntity.getBody()))
+        // Check if the response body is null or empty
+        FakeStoreProductResponseDto[] body = responseEntity.getBody();
+        if (body == null || body.length == 0) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+
+        // Map response body to Product list
+        List<Product> products = Arrays.stream(body)
                 .map(ProductMapper.INSTANCE::fakeStoreProductResponseDtoToProduct)
-                .toList();
+                .collect(Collectors.toList());
 
         // Apply pagination logic manually
         int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), products.size());
+        int end = Math.min(start + pageable.getPageSize(), products.size());
         List<Product> paginatedProducts = products.subList(start, end);
+
 
         return new PageImpl<>(paginatedProducts, pageable, products.size());
 
