@@ -8,17 +8,23 @@ import com.example.product_service.models.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
-@Service
+@Service("fakeStoreProductService")
 public class FakeStoreProductService implements ProductService {
 
     private final RestTemplate restTemplate;
     private static final Logger logger = LoggerFactory.getLogger(FakeStoreProductService.class);
+    @Value("${rest-template.base-url}")
+    private String BASE_URL;
 
     @Autowired
     public FakeStoreProductService(RestTemplate restTemplate) {
@@ -27,13 +33,13 @@ public class FakeStoreProductService implements ProductService {
 
     @Override
     public Product getProductById(Long id) {
-        FakeStoreProductResponseDto dto = restTemplate.getForObject("https://fakestoreapi.com/products/{id}", FakeStoreProductResponseDto.class, id);
+        FakeStoreProductResponseDto dto = restTemplate.getForObject(BASE_URL + "/{id}", FakeStoreProductResponseDto.class, id);
         return ProductMapper.INSTANCE.fakeStoreProductResponseDtoToProduct(dto);
 
     }
 
     @Override
-    public List<Product> getAllProducts() {
+    public Page<Product> getAllProducts(Pageable pageable) {
 //        TODO: Using exchange method
 //        ResponseEntity<List<FakeStoreProductResponseDto>> responseEntity = restTemplate.exchange(
 //                "https://fakestoreapi.com/products",
@@ -43,12 +49,26 @@ public class FakeStoreProductService implements ProductService {
 //        );
 
         // TODO: Using the get for Entity method
-        ResponseEntity<FakeStoreProductResponseDto[]> responseEntity = restTemplate.
-                getForEntity("https://fakestoreapi.com/products",
-                        FakeStoreProductResponseDto[].class);
+//        ResponseEntity<FakeStoreProductResponseDto[]> responseEntity = restTemplate.
+//                getForEntity("https://fakestoreapi.com/products",
+//                        FakeStoreProductResponseDto[].class);
+//
+//        return Arrays.stream(Objects.requireNonNull(responseEntity.getBody()))
+//                .map(ProductMapper.INSTANCE::fakeStoreProductResponseDtoToProduct).toList();
 
-        return Arrays.stream(Objects.requireNonNull(responseEntity.getBody()))
-                .map(ProductMapper.INSTANCE::fakeStoreProductResponseDtoToProduct).toList();
+        ResponseEntity<FakeStoreProductResponseDto[]> responseEntity =
+                restTemplate.getForEntity(BASE_URL, FakeStoreProductResponseDto[].class);
+
+        List<Product> products = Arrays.stream(Objects.requireNonNull(responseEntity.getBody()))
+                .map(ProductMapper.INSTANCE::fakeStoreProductResponseDtoToProduct)
+                .toList();
+
+        // Apply pagination logic manually
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), products.size());
+        List<Product> paginatedProducts = products.subList(start, end);
+
+        return new PageImpl<>(paginatedProducts, pageable, products.size());
 
     }
 
@@ -59,7 +79,7 @@ public class FakeStoreProductService implements ProductService {
 
         try {
             ResponseEntity<FakeStoreProductResponseDto> responseEntity =
-                    restTemplate.postForEntity("https://fakestoreapi.com/products", requestDto, FakeStoreProductResponseDto.class);
+                    restTemplate.postForEntity(BASE_URL, requestDto, FakeStoreProductResponseDto.class);
 
             if (responseEntity.getBody() == null) {
                 logger.error("Failed to add product: response body is null");
@@ -78,7 +98,7 @@ public class FakeStoreProductService implements ProductService {
         FakeStoreProductResponseDto requestDto = ProductMapper.INSTANCE.productDtoToFakeStoreProductResponseDto(productDto);
 
         FakeStoreProductResponseDto responseDto = restTemplate.patchForObject(
-                "http://fakestoreapi.com/products/{id}",
+                BASE_URL + "/{id}",
                 requestDto,
                 FakeStoreProductResponseDto.class, id
         );

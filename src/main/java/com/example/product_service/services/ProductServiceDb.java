@@ -8,37 +8,41 @@ import com.example.product_service.models.Product;
 import com.example.product_service.repositories.ProductRepository;
 import jakarta.annotation.Priority;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service("productServiceDb")
 @Priority(1)
 public class ProductServiceDb implements ProductService{
 
     private final ProductRepository productRepository;
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
 
     @Autowired
-    public ProductServiceDb(ProductRepository productRepository) {
+    public ProductServiceDb(ProductRepository productRepository, CategoryService categoryService) {
         this.productRepository = productRepository;
+        this.categoryService = categoryService;
     }
 
 
     @Override
     public Product getProductById(Long id) {
-        return productRepository.findById(id).get();
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + id));
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional
     public Product addProduct(ProductDto productDto) {
         Product product = ProductMapper.INSTANCE.productDtoToProduct(productDto);
         Category category = categoryService.getCategoryByName(productDto.getCategoryName(), productDto.getCategoryDescription());
