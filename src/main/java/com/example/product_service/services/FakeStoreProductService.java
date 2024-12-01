@@ -2,8 +2,11 @@ package com.example.product_service.services;
 
 import com.example.product_service.dto.FakeStoreProductResponseDto;
 import com.example.product_service.dto.ProductDto;
+import com.example.product_service.exceptions.RestTemplateException;
 import com.example.product_service.mapper.ProductMapper;
 import com.example.product_service.models.Product;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ import java.util.*;
 public class FakeStoreProductService implements ProductService {
 
     private final RestTemplate restTemplate;
+    private static final Logger logger = LoggerFactory.getLogger(FakeStoreProductService.class);
 
     @Autowired
     public FakeStoreProductService(RestTemplate restTemplate) {
@@ -53,10 +57,20 @@ public class FakeStoreProductService implements ProductService {
 
         FakeStoreProductResponseDto requestDto = ProductMapper.INSTANCE.productDtoToFakeStoreProductResponseDto(productDto);
 
-        ResponseEntity<FakeStoreProductResponseDto> responseEntity =
-                restTemplate.postForEntity("https://fakestoreapi.com/products", requestDto, FakeStoreProductResponseDto.class);
+        try {
+            ResponseEntity<FakeStoreProductResponseDto> responseEntity =
+                    restTemplate.postForEntity("https://fakestoreapi.com/products", requestDto, FakeStoreProductResponseDto.class);
 
-        return ProductMapper.INSTANCE.fakeStoreProductResponseDtoToProduct(Objects.requireNonNull(responseEntity.getBody()));
+            if (responseEntity.getBody() == null) {
+                logger.error("Failed to add product: response body is null");
+                throw new RestTemplateException("Failed to add product: response body is null");
+            }
+
+            return ProductMapper.INSTANCE.fakeStoreProductResponseDtoToProduct(responseEntity.getBody());
+        } catch (Exception e) {
+            logger.error("Error occurred while adding product: {}", e.getMessage());
+            throw new RestTemplateException("Error occurred while adding product", e);
+        }
     }
 
     @Override

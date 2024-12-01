@@ -25,6 +25,12 @@ public class ExceptionHandlerClass {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
+    @ExceptionHandler(RestTemplateException.class)
+    public ResponseEntity<Object> handleRestTemplateException(Exception e) {
+        logger.info("Exception occurred: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception e) {
         logger.info("Exception occurred: " + e.getMessage());
