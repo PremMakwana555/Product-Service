@@ -39,6 +39,7 @@ logging:
     org:
       springframework:
         web: INFO
+    web: debug
 
 
 rest-template:

@@ -30,7 +30,7 @@ public class SecurityConfig {
     @Profile("dev")  // This configuration will be active only in the "dev" profile
     public SecurityFilterChain devFilterChain(HttpSecurity http) throws Exception {
         // Disable security for development
-        http
+        http    .csrf().disable()
                 .authorizeRequests()
                 .anyRequest().permitAll();  // Allows all requests without authentication
         return http.build();

@@ -5,7 +5,7 @@ import com.example.product_service.exceptions.ProductNotFoundException;
 import com.example.product_service.mapper.ProductMapper;
 import com.example.product_service.models.Category;
 import com.example.product_service.models.Product;
-import com.example.product_service.repositories.ProductRepository;
+import com.example.product_service.repositories.jpa.ProductRepository;
 import jakarta.annotation.Priority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
