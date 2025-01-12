@@ -20,12 +20,14 @@ import java.util.Optional;
 public class ProductServiceDb implements ProductService{
 
     private final ProductRepository productRepository;
+    private final ProductSyncService productSyncService;
     private final CategoryService categoryService;
 
 
     @Autowired
-    public ProductServiceDb(ProductRepository productRepository, CategoryService categoryService) {
+    public ProductServiceDb(ProductRepository productRepository, ProductSyncService productSyncService, CategoryService categoryService) {
         this.productRepository = productRepository;
+        this.productSyncService = productSyncService;
         this.categoryService = categoryService;
     }
 
@@ -47,7 +49,9 @@ public class ProductServiceDb implements ProductService{
         Product product = ProductMapper.INSTANCE.productDtoToProduct(productDto);
         Category category = categoryService.getCategoryByName(productDto.getCategoryName(), productDto.getCategoryDescription());
         product.setCategory(category);
-        return productRepository.save(product);
+        Product product1 = productRepository.save(product);
+        productSyncService.saveProduct(product1);
+        return product1;
     }
 
     @Override
@@ -57,5 +61,10 @@ public class ProductServiceDb implements ProductService{
             throw new ProductNotFoundException("Product not found");
         }
         return new Product();
+    }
+
+    @Override
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
     }
 }

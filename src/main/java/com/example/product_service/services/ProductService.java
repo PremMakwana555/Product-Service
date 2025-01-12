@@ -6,8 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public interface ProductService {
     public Product getProductById(Long id) ;
@@ -17,4 +15,6 @@ public interface ProductService {
     public Product addProduct(ProductDto productDto);
 
     public Product partiallyUpdate(Long id, ProductDto productDto);
+
+    public void deleteProduct(Long id);
 }

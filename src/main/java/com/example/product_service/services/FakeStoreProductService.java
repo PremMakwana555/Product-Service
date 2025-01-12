@@ -19,7 +19,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service("fakeStoreProductService")
 public class FakeStoreProductService implements ProductService {
@@ -27,7 +26,7 @@ public class FakeStoreProductService implements ProductService {
     private final RestTemplate restTemplate;
     private static final Logger logger = LoggerFactory.getLogger(FakeStoreProductService.class);
     @Value("${rest-template.base-url}")
-    private String BASE_URL;
+    private String BASEURL;
 
     @Autowired
     public FakeStoreProductService(RestTemplate restTemplate) {
@@ -36,7 +35,7 @@ public class FakeStoreProductService implements ProductService {
 
     @Override
     public Product getProductById(Long id) {
-        FakeStoreProductResponseDto dto = restTemplate.getForObject(BASE_URL + "/{id}", FakeStoreProductResponseDto.class, id);
+        FakeStoreProductResponseDto dto = restTemplate.getForObject(BASEURL + "/{id}", FakeStoreProductResponseDto.class, id);
         return ProductMapper.INSTANCE.fakeStoreProductResponseDtoToProduct(dto);
 
     }
@@ -61,7 +60,7 @@ public class FakeStoreProductService implements ProductService {
         ResponseEntity<FakeStoreProductResponseDto[]> responseEntity;
 
         try {
-            responseEntity = restTemplate.getForEntity(BASE_URL, FakeStoreProductResponseDto[].class);
+            responseEntity = restTemplate.getForEntity(BASEURL, FakeStoreProductResponseDto[].class);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             // Handle errors such as 4xx or 5xx status codes
             throw new RestTemplateException("Error fetching products from FakeStore API", e);
@@ -76,7 +75,7 @@ public class FakeStoreProductService implements ProductService {
         // Map response body to Product list
         List<Product> products = Arrays.stream(body)
                 .map(ProductMapper.INSTANCE::fakeStoreProductResponseDtoToProduct)
-                .collect(Collectors.toList());
+                .toList();
 
         // Apply pagination logic manually
         int start = (int) pageable.getOffset();
@@ -95,7 +94,7 @@ public class FakeStoreProductService implements ProductService {
 
         try {
             ResponseEntity<FakeStoreProductResponseDto> responseEntity =
-                    restTemplate.postForEntity(BASE_URL, requestDto, FakeStoreProductResponseDto.class);
+                    restTemplate.postForEntity(BASEURL, requestDto, FakeStoreProductResponseDto.class);
 
             if (responseEntity.getBody() == null) {
                 logger.error("Failed to add product: response body is null");
@@ -104,7 +103,6 @@ public class FakeStoreProductService implements ProductService {
 
             return ProductMapper.INSTANCE.fakeStoreProductResponseDtoToProduct(responseEntity.getBody());
         } catch (Exception e) {
-            logger.error("Error occurred while adding product: {}", e.getMessage());
             throw new RestTemplateException("Error occurred while adding product", e);
         }
     }
@@ -114,23 +112,28 @@ public class FakeStoreProductService implements ProductService {
         FakeStoreProductResponseDto requestDto = ProductMapper.INSTANCE.productDtoToFakeStoreProductResponseDto(productDto);
 
         FakeStoreProductResponseDto responseDto = restTemplate.patchForObject(
-                BASE_URL + "/{id}",
+                BASEURL + "/{id}",
                 requestDto,
                 FakeStoreProductResponseDto.class, id
         );
 
         return ProductMapper.INSTANCE.fakeStoreProductResponseDtoToProduct(responseDto);
 
-//        HttpEntity<FakeStoreProductResponseDto> requestEntity = new HttpEntity<>(requestDto);
-//
-//        ResponseEntity<FakeStoreProductResponseDto> responseEntity = restTemplate.exchange(
-//                "http://fakestoreapi.com/products/" + id,
-//                HttpMethod.PATCH,
-//                requestEntity,
-//                FakeStoreProductResponseDto.class
-//        );
-//        return ProductMapper.INSTANCE.fakeStoreProductResponseDtoToProduct(responseEntity.getBody());
+        /*
+        HttpEntity<FakeStoreProductResponseDto> requestEntity = new HttpEntity<>(requestDto);
+
+        ResponseEntity<FakeStoreProductResponseDto> responseEntity = restTemplate.exchange(
+                "http://fakestoreapi.com/products/" + id,
+                HttpMethod.PATCH,
+                requestEntity,
+                FakeStoreProductResponseDto.class
+        );
+        return ProductMapper.INSTANCE.fakeStoreProductResponseDtoToProduct(responseEntity.getBody());
+        */
     }
 
-
+    @Override
+    public void deleteProduct(Long id) {
+        restTemplate.delete(BASEURL + "/{id}", id);
+    }
 }

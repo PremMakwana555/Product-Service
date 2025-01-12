@@ -3,7 +3,9 @@ package com.example.product_service.controllers;
 import com.example.product_service.dto.ProductDto;
 import com.example.product_service.mapper.ProductMapper;
 import com.example.product_service.models.Product;
+import com.example.product_service.services.CategoryService;
 import com.example.product_service.services.ProductService;
+import com.example.product_service.services.ProductSyncService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -22,15 +24,18 @@ public class ProductController {
     Logger logger = Logger.getLogger(getClass().getName());
 
     private final ProductService productService;
+    private final CategoryService categoryService;
+    private final ProductSyncService productSyncService;
 
     @Autowired
-    public ProductController(@Qualifier("productServiceDb") ProductService productService) {
+    public ProductController(@Qualifier("productServiceDb") ProductService productService, CategoryService categoryService, ProductSyncService productSyncService) {
         this.productService = productService;
+        this.categoryService = categoryService;
+        this.productSyncService = productSyncService;
     }
 
     @GetMapping("/product/{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long id) {
-        logger.info("ProductController.getProductById");
         ProductDto productDto = ProductMapper.INSTANCE.productDtoToProduct(productService.getProductById(id));
         return ResponseEntity.ok(productDto);
     }
@@ -38,21 +43,28 @@ public class ProductController {
     @GetMapping("/products")
     public ResponseEntity<PagedModel<ProductDto>> getAllProducts(@RequestParam(defaultValue = "0") int page,
                                                                  @RequestParam(defaultValue = "10") int size) {
-        logger.info("ProductController.getAllProducts");
         Pageable pageable = PageRequest.of(page, size);
-        // Convert Page<Product> to Page<ProductDto>
         Page<ProductDto> productDtoPage = productService.getAllProducts(pageable)
                 .map(ProductMapper.INSTANCE::productToProductDto);
-        // Create PagedModel with content
         PagedModel<ProductDto> pagedModel = new PagedModel<>(productDtoPage);
         return ResponseEntity.ok(pagedModel);
 
     }
 
+    @GetMapping("/category")
+    public ResponseEntity<List<ProductDto>> getProductById(@RequestParam String name) {
+        logger.info("ProductController.getProductById");
+        List<ProductDto> productDtoList = categoryService.getProductsByCategory(name)
+                .stream().map(ProductMapper.INSTANCE::productToProductDto).toList();
+        return ResponseEntity.ok(productDtoList);
+    }
+
+
     @PostMapping("/product")
     public ResponseEntity<ProductDto> addProduct(@RequestBody ProductDto productDto) {
         logger.info("ProductController.addProduct");
         Product product = productService.addProduct(productDto);
+        productSyncService.saveProduct(product);
         return ResponseEntity.ok(ProductMapper.INSTANCE.productDtoToProduct(product));
     }
 
@@ -62,4 +74,12 @@ public class ProductController {
         Product product = productService.partiallyUpdate(id, productDto);
         return ResponseEntity.ok(ProductMapper.INSTANCE.productDtoToProduct(product));
     }
+
+    @DeleteMapping("/product/{id}")
+    public ResponseEntity<String> deleteProductById(@PathVariable("id") Long id) {
+        logger.info("ProductController.getProductById");
+        productService.deleteProduct(id);
+        return ResponseEntity.ok("Product deleted successfully with id: " + id);
+    }
+
 }

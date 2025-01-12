@@ -16,5 +16,6 @@ public class Product extends BaseEntity {
     private Double price;
     private String imageUrl;
     @ManyToOne
+    @JoinColumn(name = "category_id")
     private Category category;
 }
