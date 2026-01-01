@@ -1,25 +1,49 @@
 spring:
   application:
     name: ProductService
+  data:
+    redis:
+      host: localhost
+      port: 6379
+    elasticsearch:
+      rest:
+        uris: http://localhost:9200
 
+  profiles:
+    active: dev
+
+  #  datasource:
+#    url: jdbc:postgresql://localhost:5431/product_db
+#    username: postgres
+#    password: postgres
   datasource:
-    url: jdbc:postgresql://localhost:5431/product_db
-    username: postgres
-    password: postgres
+    url: jdbc:mysql://mysql-75e4481-premmakwana555.c.aivencloud.com:10277/product_db
+    username: mysql_user
+    password: mysql_password
 
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
     properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        jakarta.persistence.jdbc.url: jdbc:postgresql://localhost:5431/product_db
-        jakarta.persistence.jdbc.user: postgres
-        jakarta.persistence.jdbc.password: postgres
+        hibernate:
+            dialect: org.hibernate.dialect.MySQLDialect
+#            dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081
 
 logging:
   level:
     org:
       springframework:
         web: INFO
+    web: debug
+
+
+rest-template:
+  base-url: https://fakestoreapi.com/products
