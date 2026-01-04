@@ -28,7 +28,8 @@ public class ProductController {
     private final ProductSyncService productSyncService;
 
     @Autowired
-    public ProductController(@Qualifier("productServiceDb") ProductService productService, CategoryService categoryService, ProductSyncService productSyncService) {
+    public ProductController(@Qualifier("productServiceDb") ProductService productService,
+            CategoryService categoryService, ProductSyncService productSyncService) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.productSyncService = productSyncService;
@@ -42,7 +43,7 @@ public class ProductController {
 
     @GetMapping("/products")
     public ResponseEntity<PagedModel<ProductDto>> getAllProducts(@RequestParam(defaultValue = "0") int page,
-                                                                 @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ProductDto> productDtoPage = productService.getAllProducts(pageable)
                 .map(ProductMapper.INSTANCE::productToProductDto);
@@ -59,12 +60,11 @@ public class ProductController {
         return ResponseEntity.ok(productDtoList);
     }
 
-
     @PostMapping("/product")
     public ResponseEntity<ProductDto> addProduct(@RequestBody ProductDto productDto) {
         logger.info("ProductController.addProduct");
         Product product = productService.addProduct(productDto);
-        productSyncService.saveProduct(product);
+        // Note: productSyncService is called inside productService.addProduct
         return ResponseEntity.ok(ProductMapper.INSTANCE.productDtoToProduct(product));
     }
 

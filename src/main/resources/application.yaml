@@ -1,6 +1,6 @@
 spring:
   application:
-    name: ProductService
+    name: product-service
   data:
     redis:
       host: localhost
@@ -12,14 +12,10 @@ spring:
   profiles:
     active: dev
 
-  #  datasource:
-#    url: jdbc:postgresql://localhost:5431/product_db
-#    username: postgres
-#    password: postgres
   datasource:
-    url: jdbc:mysql://mysql-75e4481-premmakwana555.c.aivencloud.com:10277/product_db
-    username: mysql_user
-    password: mysql_password
+    url: jdbc:mysql://localhost:3306/product_service_db?createDatabaseIfNotExist=true
+    username: root
+    password: root
 
   jpa:
     show-sql: true
@@ -28,22 +24,59 @@ spring:
     properties:
         hibernate:
             dialect: org.hibernate.dialect.MySQLDialect
-#            dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: true
 
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8081
+          issuer-uri: http://localhost:8084
+
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+
+# Server Configuration
+server:
+  port: 8082
+
+# Kafka Topics
+kafka:
+  topics:
+    product-events: product.events
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: false
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
 
 logging:
   level:
     org:
       springframework:
         web: INFO
+    com.example.product_service: DEBUG
     web: debug
-
 
 rest-template:
   base-url: https://fakestoreapi.com/products

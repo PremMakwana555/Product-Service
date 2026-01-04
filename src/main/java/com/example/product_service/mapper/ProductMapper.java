@@ -1,6 +1,5 @@
 package com.example.product_service.mapper;
 
-import com.example.product_service.dto.FakeStoreProductResponseDto;
 import com.example.product_service.dto.ProductDto;
 import com.example.product_service.models.Category;
 import com.example.product_service.models.Product;
@@ -12,20 +11,9 @@ import org.mapstruct.factory.Mappers;
 public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
-    @Mapping(source = "image", target = "imageUrl")
-    @Mapping(source = "category", target = "category")
-    Product fakeStoreProductResponseDtoToProduct(FakeStoreProductResponseDto dto);
-
-    @Mapping(source = "category.name", target = "category")
-    FakeStoreProductResponseDto productToFakeStoreProductResponseDto(Product product);
-
     ProductDto productDtoToProduct(Product product);
 
     Product productDtoToProduct(ProductDto productDto);
-
-    @Mapping(source = "categoryName", target = "category")
-    @Mapping(source = "imageUrl", target = "image")
-    FakeStoreProductResponseDto productDtoToFakeStoreProductResponseDto(ProductDto productDto);
 
     default Category map(String value) {
         if (value == null) {
